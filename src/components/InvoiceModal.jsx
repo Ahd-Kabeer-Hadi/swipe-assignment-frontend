@@ -44,9 +44,9 @@ const InvoiceModal = (props) => {
               <h4 className="fw-bold my-2">
                 {props.info.billFrom || "John Uberbacher"}
               </h4>
-              <h7 className="fw-bold text-secondary mb-1">
+              <h6 className="fw-bold text-secondary mb-1">
                 Invoice No.: {props.info.invoiceNumber || ""}
-              </h7>
+              </h6>
             </div>
             <div className="text-end ms-4">
               <h6 className="fw-bold mt-1 mb-2">Amount&nbsp;Due:</h6>
@@ -85,22 +85,73 @@ const InvoiceModal = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {props.items.map((item, i) => {
-                  return (
-                    <tr id={i} key={i}>
-                      <td style={{ width: "70px" }}>{item.itemQuantity}</td>
-                      <td>
-                        {item.itemName} - {item.itemDescription}
-                      </td>
-                      <td className="text-end" style={{ width: "100px" }}>
-                        {props.currency} {item.itemPrice}
-                      </td>
-                      <td className="text-end" style={{ width: "100px" }}>
-                        {props.currency} {item.itemPrice * item.itemQuantity}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {props.items &&
+                  Object.entries(
+                    props.items.reduce((acc, item) => {
+                      const category =
+                        item.itemCategory || "Others / Miscellaneous";
+                      if (!acc[category]) {
+                        acc[category] = [];
+                      }
+                      acc[category].push(item);
+                      return acc;
+                    }, {})
+                  ).map(([category, items], index) => {
+                    // Calculate total amount for the category
+                    const totalAmount = items.reduce(
+                      (total, item) =>
+                        total + item.itemPrice * item.itemQuantity,
+                      0
+                    );
+
+                    return (
+                      <React.Fragment key={index}>
+                        {category && (
+                          <tr>
+                            <td
+                              colSpan="4"
+                              className="text-center  fw-bold py-3 bg-light"
+                            >
+                              {category}
+                            </td>
+                          </tr>
+                        )}
+
+                        {items.map((item, i) => (
+                          <tr key={`${category}-${i}`}>
+                            <td style={{ width: "70px" }}>
+                              {item.itemQuantity}
+                            </td>
+                            <td>
+                              {item.itemName} - {item.itemDescription}
+                            </td>
+                            <td className="text-end" style={{ width: "100px" }}>
+                              {props.currency} {item.itemPrice}
+                            </td>
+                            <td className="text-end" style={{ width: "100px" }}>
+                              {props.currency}{" "}
+                              {item.itemPrice * item.itemQuantity}
+                            </td>
+                          </tr>
+                        ))}
+
+                        {category && (
+                          <tr>
+                            <td colSpan="3" className="text-end fw-bold">
+                              Total:
+                            </td>
+                            <td className="text-end fw-bold">
+                              {props.currency} {totalAmount.toFixed(2)}
+                            </td>
+                          </tr>
+                        )}
+
+                        <tr>
+                          <td colSpan="4">&nbsp;</td>
+                        </tr>
+                      </React.Fragment>
+                    );
+                  })}
               </tbody>
             </Table>
             <Table>

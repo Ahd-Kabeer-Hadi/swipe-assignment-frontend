@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Button, Card, Col, Row, Table } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BiSolidPencil, BiTrash } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
-import InvoiceModal from "../components/InvoiceModal";
+import InvoiceModal from "./InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
 import { useDispatch } from "react-redux";
@@ -24,67 +24,63 @@ const InvoiceList = () => {
   };
 
   return (
-    <Row>
-      <Col className="mx-auto" xs={12} md={8} lg={9}>
-        <h3 className="fw-bold pb-2 pb-md-4 text-center">Swipe Assignment</h3>
-        <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
-          {isListEmpty ? (
-            <div className="d-flex flex-column align-items-center">
-              <h3 className="fw-bold pb-2 pb-md-4">No invoices present</h3>
-              <Link to="/create">
-                <Button variant="primary">Create Invoice</Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="d-flex flex-column">
-              <div className="d-flex flex-row align-items-center justify-content-between">
-                <h3 className="fw-bold pb-2 pb-md-4">Invoice List</h3>
-                <Link to="/create">
-                  <Button variant="primary mb-2 mb-md-4">Create Invoice</Button>
-                </Link>
+    
+    <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
+      {isListEmpty ? (
+        <div className="d-flex flex-column align-items-center">
+          <h3 className="fw-bold pb-2 pb-md-4">No invoices present</h3>
+          <Link to="/create">
+            <Button variant="primary">Create Invoice</Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="d-flex flex-column">
+          <div className="d-flex flex-row align-items-center justify-content-between">
+            <h3 className="fw-bold pb-2 pb-md-4">Invoice List</h3>
+            <Link to="/create">
+              <Button variant="primary mb-2 mb-md-4">Create Invoice</Button>
+            </Link>
 
-                <div className="d-flex gap-2">
-                  <Button variant="dark mb-2 mb-md-4" onClick={handleCopyClick}>
-                    Copy Invoice
-                  </Button>
+            <div className="d-flex gap-2">
+              <Button variant="dark mb-2 mb-md-4" onClick={handleCopyClick}>
+                Copy Invoice
+              </Button>
 
-                  <input
-                    type="text"
-                    value={copyId}
-                    onChange={(e) => setCopyId(e.target.value)}
-                    placeholder="Enter Invoice ID to copy"
-                    className="bg-white border"
-                    style={{
-                      height: "50px",
-                    }}
-                  />
-                </div>
-              </div>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Invoice No.</th>
-                    <th>Bill To</th>
-                    <th>Due Date</th>
-                    <th>Total Amt.</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {invoiceList.map((invoice) => (
-                    <InvoiceRow
-                      key={invoice.id}
-                      invoice={invoice}
-                      navigate={navigate}
-                    />
-                  ))}
-                </tbody>
-              </Table>
+              <input
+                type="text"
+                value={copyId}
+                onChange={(e) => setCopyId(e.target.value)}
+                placeholder="Enter Invoice ID to copy"
+                className="bg-white border"
+                style={{
+                  height: "50px",
+                }}
+              />
             </div>
-          )}
-        </Card>
-      </Col>
-    </Row>
+          </div>
+          <Table responsive>
+            <thead>
+              <tr>
+                <th>Invoice No.</th>
+                <th>Bill To</th>
+                <th>Due Date</th>
+                <th>Total Amt.</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoiceList.map((invoice) => (
+                <InvoiceRow
+                  key={invoice.id}
+                  invoice={invoice}
+                  navigate={navigate}
+                />
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
+    </Card>
   );
 };
 
@@ -93,7 +89,10 @@ const InvoiceRow = ({ invoice, navigate }) => {
   const dispatch = useDispatch();
 
   const handleDeleteClick = (invoiceId) => {
-    dispatch(deleteInvoice(invoiceId));
+    // can be added as a popup but kept it like this for now to maintain current practice
+    if (window.confirm("Are you sure? This cannot be undone.")) {
+      dispatch(deleteInvoice(invoiceId));
+    }
   };
 
   const handleEditClick = () => {
