@@ -13,7 +13,7 @@ import { useDispatch } from "react-redux";
 import { addInvoice, updateInvoice } from "../redux/invoicesSlice";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import generateRandomId from "../utils/generateRandomId";
-import { useInvoiceListData } from "../redux/hooks";
+import { useInvoiceListData, useProductListData } from "../redux/hooks";
 
 const InvoiceForm = () => {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ const InvoiceForm = () => {
   const navigate = useNavigate();
   const isCopy = location.pathname.includes("create");
   const isEdit = location.pathname.includes("edit");
+  const { getOneProduct } = useProductListData();
 
   const [isOpen, setIsOpen] = useState(false);
   const [copyId, setCopyId] = useState("");
@@ -61,8 +62,10 @@ const InvoiceForm = () => {
               itemDescription: "",
               itemPrice: "1.00",
               itemQuantity: 1,
+              itemCategory: "",
             },
           ],
+          categories: ["Labour", "Material", "Overhead", "Other"],
         }
   );
 
@@ -71,10 +74,52 @@ const InvoiceForm = () => {
   }, []);
 
   const handleRowDel = (itemToDelete) => {
-    const updatedItems = formData.items.filter(
-      (item) => item.itemId !== itemToDelete.itemId
-    );
-    setFormData({ ...formData, items: updatedItems });
+
+    if (
+      itemToDelete.itemName !== "" &&
+      window.confirm(
+        "Are you sure? If you delete an item, it cannot be undone."
+      )
+    ) {
+      const updatedItems = formData.items.filter(
+        (item) => item.itemId !== itemToDelete.itemId
+      );
+      setFormData({ ...formData, items: updatedItems });
+    } else {
+      const updatedItems = formData.items.filter(
+        (item) => item.itemId !== itemToDelete.itemId
+      );
+      setFormData({ ...formData, items: updatedItems });
+    }
+
+    handleCalculateTotal();
+  };
+
+  const handleAddProduct = (productIds) => {
+    if (!productIds || productIds.length === 0) {
+      alert("Please select at least one product");
+    }
+    const items = [];
+    productIds.forEach((ProductId) => {
+      const id = (+new Date() + Math.floor(Math.random() * 999999)).toString(
+        36
+      );
+
+      const product = getOneProduct(ProductId);
+
+      items.push({
+        itemId: id,
+        itemName: product.name,
+        itemDescription: product.description,
+        itemPrice: product.price,
+        itemQuantity: 1,
+        productId: product.id,
+      });
+    });
+    setFormData({
+      ...formData,
+      items: [...formData.items, ...items],
+    });
     handleCalculateTotal();
   };
 
@@ -91,6 +136,7 @@ const InvoiceForm = () => {
       ...formData,
       items: [...formData.items, newItem],
     });
+
     handleCalculateTotal();
   };
 
@@ -125,6 +171,7 @@ const InvoiceForm = () => {
     });
   };
 
+
   const onItemizedItemEdit = (evt, id) => {
     const updatedItems = formData.items.map((oldItem) => {
       if (oldItem.itemId === id) {
@@ -158,6 +205,7 @@ const InvoiceForm = () => {
 
   const handleAddInvoice = () => {
     if (isEdit) {
+      console.log(formData);
       dispatch(updateInvoice({ id: params.id, updatedInvoice: formData }));
       alert("Invoice updated successfuly 🥳");
     } else if (isCopy) {
@@ -305,6 +353,7 @@ const InvoiceForm = () => {
               onItemizedItemEdit={onItemizedItemEdit}
               onRowAdd={handleAddEvent}
               onRowDel={handleRowDel}
+              onProductAdd={handleAddProduct}
               currency={formData.currency}
               items={formData.items}
             />

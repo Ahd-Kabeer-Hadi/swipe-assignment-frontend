@@ -92,3 +92,13 @@ hr {
   -ms-user-select: none;
   user-select: none;
 }
+
+.line-breaks {
+  overflow: hidden;
+  display: -webkit-box;
+  
+  -webkit-line-clamp: 1; /* number of lines to show */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 2.1rem;
+}
