@@ -5,7 +5,6 @@ import { BiPencil, BiTrash } from "react-icons/bi";
 import EditableField from "./EditableField";
 import { Dropdown } from "react-bootstrap";
 import ProductModal from "./ProductModal";
-import ProductForm from "./ProductForm";
 import ProductFormModal from "./ProductFormModal";
 
 const InvoiceItem = (props) => {
@@ -18,6 +17,7 @@ const InvoiceItem = (props) => {
     onProductAdd,
   } = props;
   const [isOpen, setIsOpen] = useState(false);
+
   const addFromProducts = (selectedProducts) => {
     onProductAdd(selectedProducts);
     closeModal();
@@ -27,15 +27,19 @@ const InvoiceItem = (props) => {
     setIsOpen(false);
   };
 
-  const itemTable = items.map((item) => (
-    <ItemRow
-      key={item.id}
-      item={item}
-      onDelEvent={onRowDel}
-      onItemizedItemEdit={onItemizedItemEdit}
-      currency={currency}
-    />
-  ));
+  const renderRows = (filterFunc) => {
+    return items
+      .filter(filterFunc)
+      .map((item) => (
+        <RowComponent
+          key={item.id}
+          item={item}
+          onDelEvent={onRowDel}
+          onItemizedItemEdit={onItemizedItemEdit}
+          currency={currency}
+        />
+      ));
+  };
 
   return (
     <div>
@@ -48,7 +52,10 @@ const InvoiceItem = (props) => {
             <th className="text-center">ACTION</th>
           </tr>
         </thead>
-        <tbody>{itemTable}</tbody>
+        <tbody>
+          {renderRows((item) => !item.productId)}
+          {renderRows((item) => item.productId)}
+        </tbody>
       </Table>
       <Dropdown>
         <Dropdown.Toggle
@@ -65,34 +72,36 @@ const InvoiceItem = (props) => {
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
-      <div>
-        <ProductModal
-          showModal={isOpen}
-          closeModal={closeModal}
-          onProductAdd={(evt) => addFromProducts(evt)}
-          mode="add"
-        ></ProductModal>
-      </div>
+      <ProductModal
+        showModal={isOpen}
+        closeModal={closeModal}
+        onProductAdd={(evt) => addFromProducts(evt)}
+        mode="add"
+      />
     </div>
   );
 };
 
-const ItemRow = (props) => {
+const RowComponent = (props) => {
   const [openProductForm, setOpenProductForm] = useState(false);
 
   const onDelEvent = () => {
     props.onDelEvent(props.item);
   };
+
   const onEditProduct = () => {
     setOpenProductForm(true);
   };
+
   const updateFormData = (newData) => {
-    
     props.onItemizedItemEdit(newData, props.item.itemId);
-    
   };
+
   return (
     <>
+      <tr>
+        <td colSpan={4}>{props.item.productId ? <h6 className="pt-2 pb-2">Product</h6> : null}</td>
+      </tr>
       <tr>
         <td style={{ width: "100%" }}>
           <EditableField
@@ -105,7 +114,7 @@ const ItemRow = (props) => {
               placeholder: "Item name",
               value: props.item.itemName,
               id: props.item.itemId,
-              disabled: props.item.productId ? true : false,
+              disabled: props.item.productId,
             }}
           />
           <EditableField
@@ -118,7 +127,7 @@ const ItemRow = (props) => {
               placeholder: "Item description",
               value: props.item.itemDescription,
               id: props.item.itemId,
-              disabled: props.item.productId ? true : false,
+              disabled: props.item.productId,
             }}
           />
           <EditableField
@@ -142,7 +151,6 @@ const ItemRow = (props) => {
             cellData={{
               type: "number",
               name: "itemQuantity",
-
               min: 1,
               step: "1",
               value: props.item.itemQuantity,
@@ -165,7 +173,7 @@ const ItemRow = (props) => {
               textAlign: "text-end",
               value: props.item.itemPrice,
               id: props.item.itemId,
-              disabled: props.item.productId ? true : false,
+              disabled: props.item.productId,
             }}
           />
         </td>
@@ -180,19 +188,13 @@ const ItemRow = (props) => {
                 style={{ height: "33px", width: "33px", padding: "7.5px" }}
                 className="text-white mt-1 btn btn-success"
               />
-              <BiTrash
-                onClick={onDelEvent}
-                style={{ height: "33px", width: "33px", padding: "7.5px" }}
-                className="text-white mt-1 btn btn-danger"
-              />
             </>
-          ) : (
-            <BiTrash
-              onClick={onDelEvent}
-              style={{ height: "33px", width: "33px", padding: "7.5px" }}
-              className="text-white mt-1 btn btn-danger"
-            />
-          )}
+          ) : null}
+          <BiTrash
+            onClick={onDelEvent}
+            style={{ height: "33px", width: "33px", padding: "7.5px" }}
+            className="text-white mt-1 btn btn-danger"
+          />
         </td>
       </tr>
       {props.item.productId ? (

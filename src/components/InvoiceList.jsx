@@ -24,7 +24,6 @@ const InvoiceList = () => {
   };
 
   return (
-    
     <Card className="d-flex p-3 p-md-4 my-3 my-md-4 ">
       {isListEmpty ? (
         <div className="d-flex flex-column align-items-center">
@@ -41,31 +40,17 @@ const InvoiceList = () => {
               <Button variant="primary mb-2 mb-md-4">Create Invoice</Button>
             </Link>
 
-            <div className="d-flex gap-2">
-              <Button variant="dark mb-2 mb-md-4" onClick={handleCopyClick}>
-                Copy Invoice
-              </Button>
-
-              <input
-                type="text"
-                value={copyId}
-                onChange={(e) => setCopyId(e.target.value)}
-                placeholder="Enter Invoice ID to copy"
-                className="bg-white border"
-                style={{
-                  height: "50px",
-                }}
-              />
-            </div>
+            
           </div>
           <Table responsive>
             <thead>
-              <tr>
-                <th>Invoice No.</th>
+              <tr className="w-100">
+                <th style={{ width: "15%" }}>Invoice No.</th>
+                <th>Invoice Id</th>
                 <th>Bill To</th>
                 <th>Due Date</th>
                 <th>Total Amt.</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -78,6 +63,18 @@ const InvoiceList = () => {
               ))}
             </tbody>
           </Table>
+          <div className="d-flex gap-1 align-items-center pt-2  justify-content-end">
+              <input
+                type="text"
+                value={copyId}
+                onChange={(e) => setCopyId(e.target.value)}
+                placeholder="Enter Invoice ID to copy"
+                className="bg-white border rounded p-2 mb-2 mb-md-4"
+              />
+              <Button variant="dark mb-2 mb-md-4" onClick={handleCopyClick}>
+                Copy Invoice
+              </Button>
+            </div>
         </div>
       )}
     </Card>
@@ -109,35 +106,42 @@ const InvoiceRow = ({ invoice, navigate }) => {
   };
 
   return (
-    <tr>
-      <td>{invoice.invoiceNumber}</td>
-      <td className="fw-normal">{invoice.billTo}</td>
-      <td className="fw-normal">{invoice.dateOfIssue}</td>
-      <td className="fw-normal">
-        {invoice.currency}
-        {invoice.total}
-      </td>
-      <td style={{ width: "5%" }}>
-        <Button variant="outline-primary" onClick={handleEditClick}>
-          <div className="d-flex align-items-center justify-content-center gap-2">
+    <>
+      <tr className="align-middle">
+        <td style={{ width: "15%" }}>{invoice.invoiceNumber}</td>
+        <td className="fw-normal">{invoice.id}</td>
+        <td className="fw-normal">{invoice.billTo}</td>
+        <td className="fw-normal">{invoice.dateOfIssue}</td>
+        <td className="fw-normal">
+          {invoice.currency}
+          {invoice.total}
+        </td>
+        <td className="d-flex align-items-center justify-content-around">
+          <Button
+            variant="outline-primary"
+            onClick={handleEditClick}
+            className="d-flex align-items-center justify-content-center gap-2"
+          >
             <BiSolidPencil />
-          </div>
-        </Button>
-      </td>
-      <td style={{ width: "5%" }}>
-        <Button variant="danger" onClick={() => handleDeleteClick(invoice.id)}>
-          <div className="d-flex align-items-center justify-content-center gap-2">
+          </Button>
+
+          <Button
+            variant="danger"
+            onClick={() => handleDeleteClick(invoice.id)}
+            className="d-flex align-items-center justify-content-center gap-2"
+          >
             <BiTrash />
-          </div>
-        </Button>
-      </td>
-      <td style={{ width: "5%" }}>
-        <Button variant="secondary" onClick={openModal}>
-          <div className="d-flex align-items-center justify-content-center gap-2">
+          </Button>
+
+          <Button
+            variant="secondary"
+            onClick={openModal}
+            className="d-flex align-items-center justify-content-center gap-2"
+          >
             <BsEyeFill />
-          </div>
-        </Button>
-      </td>
+          </Button>
+        </td>
+      </tr>
       <InvoiceModal
         showModal={isOpen}
         closeModal={closeModal}
@@ -169,7 +173,7 @@ const InvoiceRow = ({ invoice, navigate }) => {
         discountAmount={invoice.discountAmount}
         total={invoice.total}
       />
-    </tr>
+    </>
   );
 };
 
