@@ -118,7 +118,6 @@ export default function ProductFormModal(props) {
       }
 
 
-      console.log(updatedInvoice);
       dispatch(
         updateInvoice({ id: invoice.id, updatedInvoice: updatedInvoice })
       );

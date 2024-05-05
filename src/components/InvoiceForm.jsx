@@ -65,7 +65,6 @@ const InvoiceForm = () => {
               itemCategory: "",
             },
           ],
-          categories: ["Labour", "Material", "Overhead", "Other"],
         }
   );
 
@@ -74,7 +73,6 @@ const InvoiceForm = () => {
   }, []);
 
   const handleRowDel = (itemToDelete) => {
-
     if (
       itemToDelete.itemName !== "" &&
       window.confirm(
@@ -171,7 +169,6 @@ const InvoiceForm = () => {
     });
   };
 
-
   const onItemizedItemEdit = (evt, id) => {
     const updatedItems = formData.items.map((oldItem) => {
       if (oldItem.itemId === id) {
@@ -205,8 +202,9 @@ const InvoiceForm = () => {
 
   const handleAddInvoice = () => {
     if (isEdit) {
-      console.log(formData);
-      dispatch(updateInvoice({ id: params.id, updatedInvoice: formData }));
+      dispatch(
+        updateInvoice({ id: Number(params.id), updatedInvoice: formData })
+      );
       alert("Invoice updated successfuly 🥳");
     } else if (isCopy) {
       dispatch(addInvoice({ id: generateRandomId(), ...formData }));
