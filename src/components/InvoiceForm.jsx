@@ -65,7 +65,6 @@ const InvoiceForm = () => {
               itemCategory: "",
             },
           ],
-          categories: ["Labour", "Material", "Overhead", "Other"],
         }
   );
 
@@ -205,7 +204,7 @@ const InvoiceForm = () => {
 
   const handleAddInvoice = () => {
     if (isEdit) {
-      console.log(formData);
+      console.log(formData); //formdata arrives here 
       dispatch(updateInvoice({ id: params.id, updatedInvoice: formData }));
       alert("Invoice updated successfuly 🥳");
     } else if (isCopy) {

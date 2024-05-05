@@ -1,14 +1,27 @@
 import { Button, Modal, Table } from "react-bootstrap";
 import { useProductListData } from "../redux/hooks";
+import ProductFormModal from "./ProductFormModal";
+import { useState } from "react";
 
 const ProductModal = (props) => {
   const { productList } = useProductListData();
   const addedProducts = [];
+
+  const [openProductForm, setOpenProductForm] = useState(false);
+
   const addToInvoice = (productId) => {
     addedProducts.push(productId);
   };
   const removeFromInvoice = (productId) => {
     addedProducts.splice(addedProducts.indexOf(productId), 1);
+  };
+
+  const addNewProduct = () => {
+    setOpenProductForm(true);
+  };
+
+  const closeModal = () => {
+    setOpenProductForm(false);
   };
 
   return (
@@ -22,7 +35,7 @@ const ProductModal = (props) => {
         <div className="p-4">
           <div className="d-flex flex-column">
             <div className="d-flex flex-row align-items-center justify-content-between">
-              <h3 className="fw-bold pb-2 pb-md-4">Invoice List</h3>
+              <h3 className="fw-bold pb-2 pb-md-4">Product List</h3>
             </div>
             <Table className="mb-0">
               <thead>
@@ -75,30 +88,54 @@ const ProductModal = (props) => {
                 })}
               </tbody>
             </Table>
-            <div className="d-flex justify-content-end mt-4 gap-2">
-              {props.mode === "add" ? (
+            <div className="d-flex justify-content-between mt-4 gap-2">
+            <div className="d-flex align-items-center gap-2">
+                {props.mode === "add" ? (
+                  <Button
+                    className="px-4"
+                    variant="primary"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      props.onProductAdd(addedProducts);
+                      props.closeModal();
+                    }}
+                  >
+                    Add
+                  </Button>
+                ) : null}
                 <Button
                   className="px-4"
-                  variant="primary"
+                  variant="outline-secondary"
                   onClick={(event) => {
                     event.preventDefault();
-                    props.onProductAdd(addedProducts);
                     props.closeModal();
                   }}
                 >
-                  Add
+                  Close
                 </Button>
-              ) : null}
-              <Button
-                className="px-4"
-                variant="outline-secondary"
-                onClick={(event) => {
-                  event.preventDefault();
-                  props.closeModal();
-                }}
-              >
-                Close
-              </Button>
+              </div>
+              <div>
+              {productList.length === 0 ? (
+                <>
+                  <Button
+                    className="px-4"
+                    variant="primary"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      addNewProduct();
+                    }}
+                  >
+                    Add New Product
+                  </Button>
+                  <ProductFormModal
+                    showModal={openProductForm}
+                    mode="add"
+                    closeModal={closeModal}
+                  />
+                </>
+              ) : null}</div>
+
+              
             </div>
           </div>
         </div>
