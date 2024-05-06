@@ -79,20 +79,18 @@ export default function ProductFormModal(props) {
   };
 
   const updateProductInInvoices = (product) => {
+    if (!confirm()) return;
     dispatch(updateProduct({ id: product.id, updatedProduct: product }));
     invoiceList.forEach((invoice) => {
       const { items = [], taxRate, discountRate } = invoice;
       const updatingItems = items.map((item) => {
         if (item.productId && item.productId === product.id) {
-          if (!confirm()) return item;
-
-         return {
+          return {
             ...item,
             itemName: product.name,
             itemDescription: product.description,
             itemPrice: product.price,
           };
-          // return (item = updatingItem);
         }
         return item;
       });
@@ -102,11 +100,17 @@ export default function ProductFormModal(props) {
       updatingItems.forEach((item) => {
         subTotal +=
           parseFloat(item.itemPrice).toFixed(2) * parseInt(item.itemQuantity);
-      })
+      });
 
       const taxAmount = parseFloat(subTotal * (taxRate / 100)).toFixed(2);
-      const discountAmount = parseFloat(subTotal * (discountRate / 100)).toFixed(2);
-      const total = (subTotal + parseFloat(taxAmount) - parseFloat(discountAmount)).toFixed(2);
+      const discountAmount = parseFloat(
+        subTotal * (discountRate / 100)
+      ).toFixed(2);
+      const total = (
+        subTotal +
+        parseFloat(taxAmount) -
+        parseFloat(discountAmount)
+      ).toFixed(2);
 
       const updatedInvoice = {
         ...invoice,
@@ -114,9 +118,8 @@ export default function ProductFormModal(props) {
         subTotal: parseFloat(subTotal).toFixed(2),
         taxAmount,
         discountAmount,
-        total
-      }
-
+        total,
+      };
 
       dispatch(
         updateInvoice({ id: invoice.id, updatedInvoice: updatedInvoice })
@@ -150,6 +153,7 @@ export default function ProductFormModal(props) {
   return (
     <div>
       <Modal
+        id={props.id}
         show={props.showModal}
         onHide={props.closeModal}
         size="lg"
