@@ -1,5 +1,5 @@
 import { Button, Card, Table } from "react-bootstrap";
-import { useProductListData } from "../redux/hooks";
+import { useInvoiceListData, useProductListData } from "../redux/hooks";
 import { BiSolidPencil, BiTrash } from "react-icons/bi";
 import { deleteProduct } from "../redux/productsSlice";
 import { useDispatch } from "react-redux";
@@ -7,13 +7,18 @@ import { BsEyeFill } from "react-icons/bs";
 import { useState } from "react";
 import ProductModal from "./ProductModal";
 import ProductFormModal from "./ProductFormModal";
+import { updateInvoice } from "../redux/invoicesSlice";
+import generateRandomId from "../utils/generateRandomId";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
+  const navigate = useNavigate();
   const { productList } = useProductListData();
   const isListEmpty = productList.length === 0;
   const [openProductForm, setOpenProductForm] = useState(false);
+
   const addNewProduct = () => {
-    setOpenProductForm(true);
+    setOpenProductForm((prevState) => !prevState);
   };
 
   const closeModal = () => {
@@ -26,25 +31,32 @@ const ProductList = () => {
         <div className="d-flex flex-column align-items-center">
           <h3 className="fw-bold pb-2 pb-md-4">No products available</h3>
 
-          <Button variant="primary" onClick={addNewProduct}>
+          <Button
+            variant="primary mb-2 mb-md-4"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/add-product");
+            }}
+          >
             Add Product
           </Button>
-
-          <ProductFormModal
-            showModal={openProductForm}
-            mode="add"
-            closeModal={closeModal}
-          />
         </div>
       ) : (
         <div className="d-flex flex-column">
           <div className="d-flex flex-row align-items-center justify-content-between">
             <h3 className="fw-bold pb-2 pb-md-4">Product List</h3>
 
-            <Button variant="primary mb-2 mb-md-4" onClick={addNewProduct}>
+            <Button
+              variant="primary mb-2 mb-md-4"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/add-product");
+              }}
+            >
               Add New Product
             </Button>
           </div>
+
           <Table responsive>
             <thead>
               <tr>
@@ -58,7 +70,13 @@ const ProductList = () => {
             </thead>
             <tbody>
               {productList.map((product, index) => (
-                <ProductRow key={product.id} product={product} index={index} />
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  index={index}
+                  openProductForm={openProductForm}
+                  setOpenProductForm={setOpenProductForm}
+                />
               ))}
             </tbody>
           </Table>
@@ -71,6 +89,8 @@ export default ProductList;
 const ProductRow = ({ product, index }) => {
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
+  const { invoiceList } = useInvoiceListData();
+
   const [openProductForm, setOpenProductForm] = useState(false);
 
   const handleEditClick = () => {
@@ -80,6 +100,21 @@ const ProductRow = ({ product, index }) => {
   const handleDeleteClick = (productId) => {
     if (window.confirm("Are you sure? This cannot be undone.")) {
       dispatch(deleteProduct(productId));
+
+      invoiceList.forEach((invoice) => {
+        const { items = [] } = invoice;
+        const updatingItems = items.map((item) => {
+          if (item.productId && item.productId === product.id) {
+            // Retains the item within the invoice but removes it as a product entry.
+            // Opting for this approach for improved efficiency with older invoices.
+            const { productId, ...newItem } = item;
+            return newItem;
+          }
+          return item;
+        });
+        const updatedInvoice = { ...invoice, items: updatingItems };
+        dispatch(updateInvoice({ id: invoice.id, updatedInvoice }));
+      });
     }
   };
 
