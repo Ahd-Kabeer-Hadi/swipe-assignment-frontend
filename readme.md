@@ -61,7 +61,7 @@ The project has been deployed on Vercel and can be accessed via the following li
 
 ### Demo Video
 
-A demo video of the project will be embedded as a Loom recording.
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d68197aae8244d4bbad0101fa4a45aa5?sid=623e2538-7bd0-4d49-a480-0f0eb1a41110" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
 ## Approach
 

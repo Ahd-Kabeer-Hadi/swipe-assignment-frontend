@@ -175,7 +175,7 @@ const ProductRow = ({ product, index }) => {
         closeModal={closeProductForm}
       />
 
-      <ProductModal showModal={showModal} closeModal={closeModal} mode="view" />
+      <ProductModal showModal={showModal} id={product.id} closeModal={closeModal} mode="view" />
     </>
   );
 };
