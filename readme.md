@@ -61,8 +61,7 @@ The project has been deployed on Vercel and can be accessed via the following li
 
 ### Demo Video
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/d68197aae8244d4bbad0101fa4a45aa5?sid=623e2538-7bd0-4d49-a480-0f0eb1a41110" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
-
+[loom record](https://www.loom.com/share/d68197aae8244d4bbad0101fa4a45aa5)
 ## Approach
 
 The approach taken involved building upon the existing codebase while implementing the specified requirements. Some enhancements were left unattended, such as form validations in inputs and implementing pagination at listings. However, these areas were considered for future improvements to further elevate the project's functionality and user experience. 
